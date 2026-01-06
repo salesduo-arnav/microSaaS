@@ -2,8 +2,16 @@ const express = require('express');
 const { createClient } = require('redis');
 const { v4: uuidv4 } = require('uuid');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const app = express();
+
+// Update CORS to allow requests from the React Frontend
+app.use(cors({
+    origin: 'http://app.lvh.me',
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(cookieParser());
 

@@ -10,6 +10,7 @@ services:
       - salesduo-net
     depends_on:
       - core-backend
+      - dashboard
 
   # 2. Shared Redis (Session Store)
   redis:
@@ -29,8 +30,17 @@ services:
       - salesduo-net
     depends_on:
       - redis
+      
+  # 4. Dashboard Frontend
+  dashboard:
+    build: ./dashboard-frontend
+    container_name: dashboard-ui
+    networks:
+      - salesduo-net
+    volumes: 
+      # Sync file changes for local dev
+      - ./dashboard-frontend/src:/app/src 
 
-# Use the external network created manually
 networks:
   salesduo-net:
     external: true
