@@ -1,0 +1,13 @@
+services:
+  web:
+    build: ./app
+    container_name: content-service-web # Matches nginx config in Repo 1
+    environment:
+      - REDIS_HOST=shared-redis
+    networks:
+      - salesduo-net # Joins the existing network
+
+# Connects to the network created in Prerequisite
+networks:
+  salesduo-net:
+    external: true

@@ -1,0 +1,36 @@
+services:
+  # 1. The Gateway (Entry Point)
+  gateway:
+    image: nginx:latest
+    ports:
+      - "80:80"  # Exposed on localhost:80 (lvh.me:80)
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - salesduo-net
+    depends_on:
+      - core-backend
+
+  # 2. Shared Redis (Session Store)
+  redis:
+    image: redis:alpine
+    container_name: shared-redis
+    networks:
+      - salesduo-net
+
+  # 3. Core Auth API (The Brain)
+  core-backend:
+    build: ./core-backend
+    container_name: core-api
+    environment:
+      - REDIS_HOST=shared-redis
+      - PORT=4000
+    networks:
+      - salesduo-net
+    depends_on:
+      - redis
+
+# Use the external network created manually
+networks:
+  salesduo-net:
+    external: true
