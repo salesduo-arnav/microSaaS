@@ -8,6 +8,38 @@ function App() {
   const queryParams = new URLSearchParams(window.location.search);
   const redirectUrl = queryParams.get('redirect');
 
+  // NEW: Check for an active session when the app loads
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        // We call the /user/me endpoint to see if our cookie is valid
+        const res = await fetch('http://api.lvh.me/user/me', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include' // CRITICAL: This sends the .lvh.me cookie to the API
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          // If valid, populate user data
+          setEmail(data.email);
+          
+          // Logic: If there's a redirect, go there. Otherwise, show dashboard.
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+          } else {
+            setIsLoggedIn(true);
+          }
+        }
+      } catch (err) {
+        // If check fails (network error or 401), stay on the login screen
+        console.log("No active session found or API error:", err);
+      }
+    };
+
+    checkSession();
+  }, [redirectUrl]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
