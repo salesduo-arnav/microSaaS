@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 import redis
 import json
 import os
-import urllib.parse  # Import this to handle URL encoding
+import urllib.parse
 
 app = FastAPI()
 
@@ -12,17 +12,15 @@ r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
-    # 1. Capture the current URL (e.g., http://content.lvh.me/)
-    # In a real proxy scenario, you might need X-Forwarded-Proto / Host headers
-    # For this POC, we can hardcode the intent or derive it.
+    # 1. Capture the current URL
     current_url = "http://content.lvh.me" 
     
     # 2. Encode it safely
-    # This turns "http://content.lvh.me" into "http%3A%2F%2Fcontent.lvh.me"
     encoded_url = urllib.parse.quote(current_url)
     
     # 3. Construct the login URL
-    login_url = f"http://app.lvh.me?redirect={encoded_url}"
+    # CHANGE: Point directly to /login to prevent the root redirect (/) from stripping the param
+    login_url = f"http://app.lvh.me/login?redirect={encoded_url}"
 
     html_content = f"""
     <!DOCTYPE html>
@@ -47,7 +45,6 @@ def read_root(request: Request):
         </div>
 
         <script>
-            // We pass the login URL from Python to JS here
             const LOGIN_URL = "{login_url}";
 
             fetch('/api/me')
@@ -63,7 +60,9 @@ def read_root(request: Request):
                             <button onclick="alert('Generating Content...')">Generate AI Content</button>
                         `;
                     }} else {{
-                        // Use the new Redirect Link
+                        // Auto-redirect if not logged in
+                        window.location.href = LOGIN_URL; 
+                        
                         el.innerHTML = `
                             <p class="error">❌ Not Logged In</p>
                             <p>You must sign in to view this content.</p>
@@ -78,7 +77,6 @@ def read_root(request: Request):
     """
     return html_content
 
-# ... (Keep the /api/me endpoint exactly as it was in the previous step)
 @app.get("/api/me")
 def read_api_me(request: Request):
     session_id = request.cookies.get("session_id")
