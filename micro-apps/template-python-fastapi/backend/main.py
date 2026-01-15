@@ -53,5 +53,5 @@ async def get_dashboard_data(user: AuthUser = Depends(get_current_user)):
         "message": f"Welcome back, {user.name}!",
         "org_id": user.org_id,
         "plan": user.plan,
-        "secret_data": [1, 2, 3, 4, 5]
+        "secret_data": "Python Backend working perfectly"
     }

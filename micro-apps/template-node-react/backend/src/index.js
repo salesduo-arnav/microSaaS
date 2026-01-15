@@ -30,7 +30,8 @@ app.get('/api/protected', requireAuth, (req, res) => {
     res.json({
         message: `Hello ${req.user.name}, this is data from the Micro App Backend!`,
         orgId: req.user.orgId,
-        secret: "JS Backend working perfectly"
+        secret: "JS Backend working perfectly",
+        plan: req.user.plan
     });
 });
 

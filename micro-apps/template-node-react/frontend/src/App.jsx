@@ -1,31 +1,40 @@
-import React from 'react';
-// Import from SDK
+import React, { useEffect, useState } from 'react';
 import { SalesDuoProvider, useSalesDuo } from '@salesduo/js-sdk/client';
 
 function AppContent() {
   const { user, isLoading } = useSalesDuo();
+  const [backendData, setBackendData] = useState(null);
 
-  if (isLoading) return <div style={{padding: 20}}>Loading Session...</div>;
+  useEffect(() => {
+    // Fetch data from the FastAPI Backend
+    // Note: We use the relative path '/api/...' which Nginx routes to Python
+    if (user) {
+      fetch('/api/protected')
+        .then(res => res.json())
+        .then(data => setBackendData(data))
+        .catch(err => console.error("API Error:", err));
+    }
+  }, [user]);
 
-  if (!user) {
-    const dashboardUrl = import.meta.env.VITE_DASHBOARD_URL || 'http://app.lvh.me';
-    return (
-        <div style={{padding: 20}}>
-            <h2>Access Denied</h2>
-            <p>Please log in via the <a href={dashboardUrl}>Main Dashboard</a>.</p>
-        </div>
-    );
-  }
+  if (isLoading) return <div>Loading Session...</div>;
+  if (!user) return <div>Access Denied</div>;
 
   return (
     <div style={{padding: 20}}>
-      <h1>Template Micro App (JS)</h1>
-      <div style={{border: '1px solid #ccc', padding: '10px', borderRadius: '5px'}}>
-        <h3>User Context from Core Platform</h3>
-        <p><strong>Name:</strong> {user.name}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>Org ID:</strong> {user.orgId}</p>
-        <p><strong>Plan:</strong> {user.plan}</p>
+      <h1>Node js + React</h1>
+      <div style={{border: '1px solid #ccc', padding: '15px', borderRadius: '5px', marginBottom: '20px'}}>
+        <h3>User Info (from JS SDK)</h3>
+        <p>Name: {user.name}</p>
+        <p>Email: {user.email}</p>
+      </div>
+
+      <div style={{border: '1px solid #007bff', padding: '15px', borderRadius: '5px'}}>
+        <h3>Backend Data (from Express App)</h3>
+        {backendData ? (
+          <pre>{JSON.stringify(backendData, null, 2)}</pre>
+        ) : (
+          <p>Loading data from Express...</p>
+        )}
       </div>
     </div>
   );
