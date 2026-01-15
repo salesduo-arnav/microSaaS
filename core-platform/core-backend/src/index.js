@@ -18,18 +18,21 @@ const PORT = process.env.PORT || 4000;
 User.belongsTo(Organization);
 Organization.hasMany(User);
 
+// You will likely add a Subscription model here later for Billing
+// Organization.hasOne(Subscription);
+
 /* ============================
    MIDDLEWARE
 ============================ */
 app.use(cors({
-    origin: 'http://app.lvh.me',
+    origin: ['http://app.lvh.me'], // Add other micro-app URLs here later
     credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
 
 /* ============================
-   REDIS CLIENT
+   REDIS CLIENT (Shared Session Store)
 ============================ */
 const redisClient = createClient({
     url: `redis://${process.env.REDIS_HOST}:6379`,
@@ -39,9 +42,8 @@ const redisClient = createClient({
 });
 
 /* ============================
-   ROUTES
+   CORE AUTH ROUTES
 ============================ */
-
 // SIGN UP
 app.post('/auth/signup', async (req, res) => {
     try {
@@ -138,23 +140,47 @@ app.post('/auth/logout', async (req, res) => {
     }
 });
 
-// CURRENT USER
+// CURRENT USER (Session Validation)
 app.get('/user/me', async (req, res) => {
     try {
         const sessionId = req.cookies.session_id;
-        if (!sessionId) {
-            return res.status(401).json({ error: 'No session' });
-        }
+        if (!sessionId) return res.status(401).json({ error: 'No session' });
 
         const data = await redisClient.get(`session:${sessionId}`);
-        if (!data) {
-            return res.status(401).json({ error: 'Session expired' });
-        }
+        if (!data) return res.status(401).json({ error: 'Session expired' });
 
         res.json(JSON.parse(data));
     } catch (err) {
         res.status(500).json({ error: 'Internal server error' });
     }
+});
+
+/* ============================
+   BILLING ENGINE (New Core Feature)
+============================ */
+// This is where Stripe/Payment logic lives. 
+// Micro-apps should NOT handle billing. They query this service.
+
+app.get('/billing/status', async (req, res) => {
+    // 1. Validate Session
+    const sessionId = req.cookies.session_id;
+    if (!sessionId) return res.status(401).json({ error: 'Unauthorized' });
+    
+    // 2. Fetch Billing Status
+    // In real life: Check DB or Stripe API for subscription status
+    const userData = JSON.parse(await redisClient.get(`session:${sessionId}`));
+    
+    res.json({
+        orgId: userData.orgId,
+        plan: userData.plan, // 'free', 'pro', 'enterprise'
+        status: 'active',
+        nextBillingDate: '2026-02-01'
+    });
+});
+
+app.post('/billing/upgrade', async (req, res) => {
+    // Logic to upgrade plan
+    res.json({ message: "Mock upgrade successful" });
 });
 
 /* ============================
@@ -194,31 +220,25 @@ function setCookie(res, sessionId) {
 ============================ */
 async function startServer() {
     // Wait for MySQL
-    while (true) {
+    let retries = 5;
+    while (retries) {
         try {
             await sequelize.authenticate();
             console.log('[MySQL] Connected');
             break;
         } catch (err) {
             console.log('[MySQL] Waiting...', err.message);
+            retries -= 1;
             await new Promise(r => setTimeout(r, 5000));
         }
     }
-
+    
     await sequelize.sync({ force: false });
-    console.log('[MySQL] Synced');
-
-    // Redis
     await redisClient.connect();
-    console.log('[Redis] Connected');
-
-    // Start HTTP server
+    
     app.listen(PORT, () => {
-        console.log(`Core Backend running on port ${PORT}`);
+        console.log(`Core Platform Backend running on port ${PORT}`);
     });
 }
 
-startServer().catch(err => {
-    console.error('Fatal startup error:', err);
-    process.exit(1);
-});
+startServer().catch(err => console.error(err));
