@@ -6,7 +6,12 @@ WORKDIR /app
 COPY shared-libs/salesduo-js-sdk ./shared-libs/salesduo-js-sdk
 WORKDIR /app/shared-libs/salesduo-js-sdk
 RUN npm install
-# Note: No build step here either
+
+WORKDIR /app
+
+COPY shared-libs/salesduo-ui ./shared-libs/salesduo-ui
+WORKDIR /app/shared-libs/salesduo-ui
+RUN npm install
 
 # 2. Setup Frontend
 WORKDIR /app/micro-apps/template-node-react/frontend

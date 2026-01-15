@@ -10,9 +10,13 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@salesduo/js-sdk": "file:../../../shared-libs/salesduo-js-sdk"
+    "@salesduo/js-sdk": "file:../../../shared-libs/salesduo-js-sdk",
+    "@salesduo/ui": "file:../../../shared-libs/salesduo-ui"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.3",

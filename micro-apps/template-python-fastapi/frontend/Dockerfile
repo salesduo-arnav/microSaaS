@@ -7,6 +7,12 @@ COPY shared-libs/salesduo-js-sdk ./shared-libs/salesduo-js-sdk
 WORKDIR /app/shared-libs/salesduo-js-sdk
 RUN npm install
 
+WORKDIR /app
+
+COPY shared-libs/salesduo-ui ./shared-libs/salesduo-ui
+WORKDIR /app/shared-libs/salesduo-ui
+RUN npm install
+
 # 2. Setup Frontend
 WORKDIR /app/micro-apps/template-python-fastapi/frontend
 COPY micro-apps/template-python-fastapi/frontend/package.json .

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SalesDuoProvider, useSalesDuo } from '@salesduo/js-sdk/client';
+import { Button } from '@salesduo/ui'; // Imported from shared lib
 
 function AppContent() {
   const { user, isLoading } = useSalesDuo();
@@ -35,6 +36,11 @@ function AppContent() {
         ) : (
           <p>Loading data from Python...</p>
         )}
+      </div>
+      <div className="flex gap-4">
+        <Button>Primary Action</Button>
+        <Button variant="destructive">Dangerous Action</Button>
+        <Button variant="outline">Secondary Action</Button>
       </div>
     </div>
   );
