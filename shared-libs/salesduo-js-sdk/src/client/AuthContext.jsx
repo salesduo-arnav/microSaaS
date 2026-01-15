@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext(undefined);
-const CORE_API_URL = "http://api.lvh.me";
+// Use Vite environment variable for Core API URL
+const CORE_API_URL = import.meta.env.VITE_CORE_API_URL || "http://api.lvh.me";
 
 export const SalesDuoProvider = ({ children }) => {
   const [user, setUser] = useState(null);

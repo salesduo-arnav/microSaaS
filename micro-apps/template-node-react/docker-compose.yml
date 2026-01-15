@@ -5,8 +5,11 @@ services:
       context: ../../  # CRITICAL: Sets context to Project Root
       dockerfile: micro-apps/template-node-react/backend/Dockerfile
     environment:
-      - PORT=5000
-      - REDIS_HOST=shared-redis
+      - PORT=${PORT:-5000}
+      - REDIS_HOST=${REDIS_HOST:-shared-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_URL=${REDIS_URL:-redis://shared-redis:6379}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://javascript.lvh.me}
     networks:
       - salesduo-net
 
@@ -16,7 +19,9 @@ services:
       context: ../../  # CRITICAL: Sets context to Project Root
       dockerfile: micro-apps/template-node-react/frontend/Dockerfile
     environment:
-      - VITE_API_URL=http://javascript.lvh.me
+      - VITE_API_URL=${VITE_API_URL:-http://javascript.lvh.me}
+      - VITE_CORE_API_URL=${VITE_CORE_API_URL:-http://api.lvh.me}
+      - VITE_DASHBOARD_URL=${VITE_DASHBOARD_URL:-http://app.lvh.me}
     ports:
       - "5000:5173" # Expose Frontend on port 5000 (map to lvh.me via hosts or nginx later)
     networks:

@@ -3,6 +3,10 @@ import json
 import logging
 from fastapi import Request, HTTPException
 import redis.asyncio as redis
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Setup Logger for SDK
 logger = logging.getLogger("salesduo_sdk")

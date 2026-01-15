@@ -2,7 +2,10 @@ const { createClient } = require('redis');
 
 let redisClient;
 
-const initSalesDuoMiddleware = async (redisUrl = 'redis://shared-redis:6379') => {
+// Default Redis URL uses environment variable if available
+const DEFAULT_REDIS_URL = process.env.REDIS_URL || 'redis://shared-redis:6379';
+
+const initSalesDuoMiddleware = async (redisUrl = DEFAULT_REDIS_URL) => {
   if (!redisClient) {
     redisClient = createClient({ url: redisUrl });
     redisClient.on('error', (err) => console.error('[SalesDuo SDK] Redis Error', err));

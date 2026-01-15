@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const { createClient } = require('redis');
 const { v4: uuidv4 } = require('uuid');
@@ -24,8 +26,12 @@ Organization.hasMany(User);
 /* ============================
    MIDDLEWARE
 ============================ */
+const corsOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',')
+    : ['http://app.lvh.me', 'http://javascript.lvh.me', 'http://python.lvh.me'];
+
 app.use(cors({
-    origin: ['http://app.lvh.me', 'http://javascript.lvh.me', 'http://python.lvh.me'], // Add other micro-app URLs here later
+    origin: corsOrigins,
     credentials: true
 }));
 app.use(express.json());
@@ -34,8 +40,9 @@ app.use(cookieParser());
 /* ============================
    REDIS CLIENT (Shared Session Store)
 ============================ */
+const REDIS_PORT = process.env.REDIS_PORT || 6379;
 const redisClient = createClient({
-    url: `redis://${process.env.REDIS_HOST}:6379`,
+    url: `redis://${process.env.REDIS_HOST}:${REDIS_PORT}`,
     socket: {
         reconnectStrategy: retries => Math.min(retries * 50, 2000)
     }
@@ -127,7 +134,7 @@ app.post('/auth/logout', async (req, res) => {
         // 2. Clear the cookie
         // IMPORTANT: Options must match exactly how the cookie was set
         res.clearCookie('session_id', {
-            domain: '.lvh.me',
+            domain: process.env.COOKIE_DOMAIN || '.lvh.me',
             path: '/'
         });
 
@@ -196,10 +203,11 @@ async function createSession(user, org) {
         plan: org.plan
     };
 
+    const sessionTTL = parseInt(process.env.SESSION_TTL, 10) || 86400;
     await redisClient.set(
         `session:${sessionId}`,
         JSON.stringify(payload),
-        { EX: 86400 }
+        { EX: sessionTTL }
     );
 
     return sessionId;
@@ -207,10 +215,10 @@ async function createSession(user, org) {
 
 function setCookie(res, sessionId) {
     res.cookie('session_id', sessionId, {
-        domain: '.lvh.me',
+        domain: process.env.COOKIE_DOMAIN || '.lvh.me',
         httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
+        secure: process.env.COOKIE_SECURE === 'true',
+        sameSite: process.env.COOKIE_SAME_SITE || 'lax',
         path: '/'
     });
 }

@@ -3,7 +3,7 @@ services:
   gateway:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "${GATEWAY_PORT:-80}:80"
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/nginx.conf
     networks:
@@ -16,7 +16,7 @@ services:
   # Critical: This holds the session data needed by middleware in other apps
   redis:
     image: redis:alpine
-    container_name: shared-redis
+    container_name: ${REDIS_HOST:-shared-redis}
     networks:
       - salesduo-net
     restart: always
@@ -26,12 +26,18 @@ services:
     build: ./core-backend
     container_name: core-api
     environment:
-      - REDIS_HOST=shared-redis
-      - DB_HOST=salesduo-db
-      - DB_USER=root
-      - DB_PASS=rootpassword
-      - DB_NAME=salesduo_core
-      - PORT=4000
+      - REDIS_HOST=${REDIS_HOST:-shared-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - DB_HOST=${DB_HOST:-salesduo-db}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASS=${DB_PASS:-rootpassword}
+      - DB_NAME=${DB_NAME:-salesduo_core}
+      - PORT=${CORE_API_PORT:-4000}
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN:-.lvh.me}
+      - COOKIE_SECURE=${COOKIE_SECURE:-false}
+      - COOKIE_SAME_SITE=${COOKIE_SAME_SITE:-lax}
+      - SESSION_TTL=${SESSION_TTL:-86400}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://app.lvh.me,http://javascript.lvh.me,http://python.lvh.me}
       # Add Stripe/Payment keys here later
     networks:
       - salesduo-net
@@ -44,18 +50,18 @@ services:
   # 4. Core Database
   db:
     image: mysql:8.0
-    container_name: salesduo-db
+    container_name: ${DB_HOST:-salesduo-db}
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: salesduo_core
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-salesduo_core}
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     networks:
       - salesduo-net
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -65,7 +71,7 @@ services:
     build: ./dashboard-frontend
     container_name: dashboard-ui
     environment:
-      - VITE_API_URL=http://api.lvh.me
+      - VITE_API_URL=${VITE_API_URL:-http://api.lvh.me}
     networks:
       - salesduo-net
     volumes:

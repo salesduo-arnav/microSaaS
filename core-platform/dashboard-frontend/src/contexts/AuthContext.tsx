@@ -21,8 +21,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Define the API Base URL (Gateway)
-const API_URL = "http://api.lvh.me";
+// Define the API Base URL (Gateway) - uses Vite environment variable
+const API_URL = import.meta.env.VITE_API_URL || "http://api.lvh.me";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

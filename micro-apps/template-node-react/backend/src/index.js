@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
@@ -8,13 +10,14 @@ const app = express();
 
 // Middleware
 app.use(cookieParser());
-app.use(cors({ 
-    origin: 'http://javascript.lvh.me', // The Frontend URL
-    credentials: true 
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://javascript.lvh.me',
+    credentials: true
 }));
 
 // Initialize Redis Connection via SDK
-initSalesDuoMiddleware();
+const redisUrl = process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || 'shared-redis'}:${process.env.REDIS_PORT || 6379}`;
+initSalesDuoMiddleware(redisUrl);
 
 // 1. Health Check
 app.get('/', (req, res) => {

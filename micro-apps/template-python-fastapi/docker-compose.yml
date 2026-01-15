@@ -5,7 +5,8 @@ services:
       context: ../../
       dockerfile: micro-apps/template-python-fastapi/backend/Dockerfile
     environment:
-      - REDIS_URL=redis://shared-redis:6379
+      - REDIS_URL=${REDIS_URL:-redis://shared-redis:6379}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://python.lvh.me,http://localhost:5006}
     networks:
       - salesduo-net
     ports:
@@ -17,7 +18,9 @@ services:
       context: ../../
       dockerfile: micro-apps/template-python-fastapi/frontend/Dockerfile
     environment:
-      - VITE_API_URL=http://python.lvh.me
+      - VITE_API_URL=${VITE_API_URL:-http://python.lvh.me}
+      - VITE_CORE_API_URL=${VITE_CORE_API_URL:-http://api.lvh.me}
+      - VITE_DASHBOARD_URL=${VITE_DASHBOARD_URL:-http://app.lvh.me}
     networks:
       - salesduo-net
     ports:

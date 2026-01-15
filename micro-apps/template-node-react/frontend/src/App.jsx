@@ -8,10 +8,11 @@ function AppContent() {
   if (isLoading) return <div style={{padding: 20}}>Loading Session...</div>;
 
   if (!user) {
+    const dashboardUrl = import.meta.env.VITE_DASHBOARD_URL || 'http://app.lvh.me';
     return (
         <div style={{padding: 20}}>
             <h2>Access Denied</h2>
-            <p>Please log in via the <a href="http://app.lvh.me">Main Dashboard</a>.</p>
+            <p>Please log in via the <a href={dashboardUrl}>Main Dashboard</a>.</p>
         </div>
     );
   }
