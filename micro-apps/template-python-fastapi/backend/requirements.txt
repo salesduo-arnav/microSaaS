@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+# Referencing the SDK path. 
+# This path is valid because of how we structure the Dockerfile below.
+-e ../../../shared-libs/salesduo-py-sdk

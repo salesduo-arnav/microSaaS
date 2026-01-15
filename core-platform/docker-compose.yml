@@ -71,12 +71,9 @@ services:
     volumes:
       - ./dashboard-frontend/src:/app/src # Hot reload support
 
-# DEFINING THE NETWORK
-# This repo OWNS the network. Other repos will use "external: true"
 networks:
   salesduo-net:
-    name: salesduo-net
-    driver: bridge
+    external: true
 
 volumes:
   db_data:

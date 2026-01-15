@@ -1,0 +1,28 @@
+services:
+  backend:
+    container_name: python-backend
+    build:
+      context: ../../
+      dockerfile: micro-apps/template-python-fastapi/backend/Dockerfile
+    environment:
+      - REDIS_URL=redis://shared-redis:6379
+    networks:
+      - salesduo-net
+    ports:
+      - "5005:5000" # Access Backend directly at localhost:5005
+
+  frontend:
+    container_name: python-frontend
+    build:
+      context: ../../
+      dockerfile: micro-apps/template-python-fastapi/frontend/Dockerfile
+    environment:
+      - VITE_API_URL=http://python.lvh.me
+    networks:
+      - salesduo-net
+    ports:
+      - "5006:5173" # Access Frontend directly at localhost:5006
+
+networks:
+  salesduo-net:
+    external: true

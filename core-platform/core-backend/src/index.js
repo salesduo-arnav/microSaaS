@@ -25,7 +25,7 @@ Organization.hasMany(User);
    MIDDLEWARE
 ============================ */
 app.use(cors({
-    origin: ['http://app.lvh.me'], // Add other micro-app URLs here later
+    origin: ['http://app.lvh.me', 'http://javascript.lvh.me', 'http://python.lvh.me'], // Add other micro-app URLs here later
     credentials: true
 }));
 app.use(express.json());
