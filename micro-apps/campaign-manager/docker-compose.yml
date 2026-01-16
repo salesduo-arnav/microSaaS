@@ -9,7 +9,7 @@ services:
       - VITE_CORE_API_URL=${VITE_CORE_API_URL:-http://api.lvh.me}
       - VITE_DASHBOARD_URL=${VITE_DASHBOARD_URL:-http://app.lvh.me}
     ports:
-      - "5000:5173" # Expose Frontend on port 5000 (map to lvh.me via hosts or nginx later)
+      - "5002:5173" # Expose Frontend on port 5000 (map to lvh.me via hosts or nginx later)
     networks:
       - salesduo-net
 

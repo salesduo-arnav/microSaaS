@@ -1,0 +1,55 @@
+import React, { useEffect, useState } from 'react';
+import { SalesDuoProvider, useSalesDuo } from '@salesduo/js-sdk/client';
+import { Button } from '@salesduo/ui'; // Imported from shared lib
+
+function AppContent() {
+    const { user, isLoading } = useSalesDuo();
+    const [backendData, setBackendData] = useState<any>(null);
+
+    useEffect(() => {
+        // Fetch data from the FastAPI Backend
+        // Note: We use the relative path '/api/...' which Nginx routes to Python
+        if (user) {
+            fetch('/api/protected')
+                .then(res => res.json())
+                .then(data => setBackendData(data))
+                .catch(err => console.error("API Error:", err));
+        }
+    }, [user]);
+
+    if (isLoading) return <div>Loading Session...</div>;
+    if (!user) return <div>Access Denied</div>;
+
+    return (
+        <div style={{ padding: 20 }}>
+            <h1>Node js + React</h1>
+            <div style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
+                <h3>User Info (from JS SDK)</h3>
+                <p>Name: {user.name}</p>
+                <p>Email: {user.email}</p>
+            </div>
+
+            <div style={{ border: '1px solid #007bff', padding: '15px', borderRadius: '5px' }}>
+                <h3>Backend Data (from Express App)</h3>
+                {backendData ? (
+                    <pre>{JSON.stringify(backendData, null, 2)}</pre>
+                ) : (
+                    <p>Loading data from Express...</p>
+                )}
+            </div>
+            <div className="flex gap-4">
+                <Button>Primary Action</Button>
+                <Button variant="destructive">Dangerous Action</Button>
+                <Button variant="outline">Secondary Action</Button>
+            </div>
+        </div>
+    );
+}
+
+export default function App() {
+    return (
+        <SalesDuoProvider>
+            <AppContent />
+        </SalesDuoProvider>
+    );
+}
