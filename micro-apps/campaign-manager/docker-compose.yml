@@ -1,0 +1,19 @@
+services:
+  frontend:
+    container_name: campaign-frontend
+    build:
+      context: ../../  # CRITICAL: Sets context to Project Root
+      dockerfile: micro-apps/campaign-manager/frontend/Dockerfile
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://campaign.lvh.me}
+      - VITE_CORE_API_URL=${VITE_CORE_API_URL:-http://api.lvh.me}
+      - VITE_DASHBOARD_URL=${VITE_DASHBOARD_URL:-http://app.lvh.me}
+    ports:
+      - "5000:5173" # Expose Frontend on port 5000 (map to lvh.me via hosts or nginx later)
+    networks:
+      - salesduo-net
+
+# Connect to the Existing Core Network
+networks:
+  salesduo-net:
+    external: true

@@ -15,7 +15,7 @@ export default function Dashboard() {
       icon: FileText,
       status: "trial" as const,
       trialDaysLeft: 12,
-      subdomain: "listing",
+      subdomain: "campaign",
     },
     {
       title: "Image Editor & Optimizer",
@@ -45,7 +45,7 @@ export default function Dashboard() {
   const handleLaunch = (subdomain: string) => {
     // TODO: Replace with actual subdomain URLs
     console.log(`Launching ${subdomain} app...`);
-    // window.location.href = `https://${subdomain}.yourapp.com`;
+    window.location.href = `http://${subdomain}.lvh.me`;
   };
 
   return (
