@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@salesduo/ui/card";
 import { Calendar, CreditCard, Activity } from "lucide-react";
 
 interface QuickStatsProps {

@@ -3,10 +3,10 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom"; // Added 
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { GoogleButton } from "@/components/auth/GoogleButton";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@salesduo/ui/button";
+import { Input } from "@salesduo/ui/input";
+import { Label } from "@salesduo/ui/label";
+import { Checkbox } from "@salesduo/ui/checkbox";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -67,7 +67,7 @@ export default function SignUp() {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* ... (Inputs for Name, Email, Password remain unchanged) ... */}
-        
+
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>
           <Input
@@ -163,8 +163,8 @@ export default function SignUp() {
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           {/* UPDATED LINK: Preserves the ?redirect=... parameter */}
-          <Link 
-            to={`/login?${searchParams.toString()}`} 
+          <Link
+            to={`/login?${searchParams.toString()}`}
             className="text-primary hover:underline"
           >
             Sign in

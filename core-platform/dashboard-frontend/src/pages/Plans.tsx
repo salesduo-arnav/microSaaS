@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@salesduo/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@salesduo/ui/card";
+import { Badge } from "@salesduo/ui/badge";
 import { Check } from "lucide-react";
 
 interface PlanFeature {
@@ -97,9 +97,8 @@ export default function Plans() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative ${
-                plan.popular ? "border-primary shadow-lg" : ""
-              }`}
+              className={`relative ${plan.popular ? "border-primary shadow-lg" : ""
+                }`}
             >
               {plan.popular && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -119,16 +118,14 @@ export default function Plans() {
                   {plan.features.map((feature) => (
                     <li
                       key={feature.name}
-                      className={`flex items-center gap-2 ${
-                        !feature.included ? "text-muted-foreground" : ""
-                      }`}
+                      className={`flex items-center gap-2 ${!feature.included ? "text-muted-foreground" : ""
+                        }`}
                     >
                       <Check
-                        className={`h-4 w-4 ${
-                          feature.included
+                        className={`h-4 w-4 ${feature.included
                             ? "text-primary"
                             : "text-muted-foreground/40"
-                        }`}
+                          }`}
                       />
                       {feature.name}
                     </li>

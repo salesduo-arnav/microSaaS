@@ -3,9 +3,9 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom"; // Added 
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { GoogleButton } from "@/components/auth/GoogleButton";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@salesduo/ui/button";
+import { Input } from "@salesduo/ui/input";
+import { Label } from "@salesduo/ui/label";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -105,8 +105,8 @@ export default function Login() {
         <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
           {/* UPDATED LINK: Preserves the ?redirect=... parameter */}
-          <Link 
-            to={`/signup?${searchParams.toString()}`} 
+          <Link
+            to={`/signup?${searchParams.toString()}`}
             className="text-primary hover:underline"
           >
             Sign up

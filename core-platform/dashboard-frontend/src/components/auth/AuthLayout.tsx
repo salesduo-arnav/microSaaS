@@ -36,8 +36,8 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
       </div>
 
       {/* Right side - Form */}
-      <div className="flex w-full lg:w-1/2 flex-col justify-center px-8 py-12 lg:px-16">
-        <div className="mx-auto w-full max-w-md">
+      <div className="flex w-full lg:w-1/2 flex-col justify-center px-8 py-16 lg:px-20">
+        <div className="mx-auto w-full max-w-sm">
           <div className="lg:hidden mb-8">
             <Link to="/" className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">

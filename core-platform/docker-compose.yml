@@ -68,14 +68,16 @@ services:
 
   # 5. Dashboard Frontend (The Shell)
   dashboard:
-    build: ./dashboard-frontend
+    build:
+      context: ..
+      dockerfile: core-platform/dashboard-frontend/Dockerfile
     container_name: dashboard-ui
     environment:
       - VITE_API_URL=${VITE_API_URL:-http://api.lvh.me}
     networks:
       - salesduo-net
     volumes:
-      - ./dashboard-frontend/src:/app/src # Hot reload support
+      - ./dashboard-frontend/src:/app/core-platform/dashboard-frontend/src # Hot reload support
 
 networks:
   salesduo-net:

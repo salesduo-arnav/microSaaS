@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,17 +6,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { User, CreditCard, LogOut } from "lucide-react";
 
-export function UserMenu() {
-  const { user, logout } = useAuth();
+export interface UserMenuProps {
+  user: {
+    name?: string;
+    email?: string;
+  } | null;
+  onLogout: () => void;
+}
+
+export function UserMenu({ user, onLogout }: UserMenuProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
+    onLogout();
     navigate("/login");
   };
 
