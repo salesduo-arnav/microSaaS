@@ -54,7 +54,6 @@
     "./toggle-group": "./src/components/ui/toggle-group.tsx",
     "./toggle": "./src/components/ui/toggle.tsx",
     "./tooltip": "./src/components/ui/tooltip.tsx",
-    "./layout": "./src/components/layout/index.ts",
     "./use-mobile": "./src/hooks/use-mobile.tsx",
     "./use-toast": "./src/hooks/use-toast.ts",
     "./utils": "./src/lib/utils.ts"

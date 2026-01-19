@@ -1,6 +1,6 @@
-import { Layout as BaseLayout } from "@salesduo/ui/layout";
-import { useAuth } from "@/contexts/AuthContext";
 import { ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Header } from "./Header";
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,12 +10,13 @@ export function Layout({ children }: LayoutProps) {
   const { user, logout, isAuthenticated } = useAuth();
 
   return (
-    <BaseLayout
-      isAuthenticated={isAuthenticated}
-      user={user}
-      onLogout={logout}
-    >
-      {children}
-    </BaseLayout>
+    <div className="min-h-screen bg-background">
+      <Header
+        isAuthenticated={isAuthenticated}
+        user={user}
+        onLogout={logout}
+      />
+      <main>{children}</main>
+    </div>
   );
 }

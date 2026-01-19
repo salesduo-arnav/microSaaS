@@ -28,7 +28,6 @@ export function Header({ isAuthenticated, user, onLogout, navItems }: HeaderProp
                     </div>
                     <span className="text-xl font-semibold">SalesDuo</span>
                 </Link>
-
                 {isAuthenticated && (
                     <nav className="hidden items-center gap-6 md:flex">
                         {items.map((item) => (
@@ -42,7 +41,6 @@ export function Header({ isAuthenticated, user, onLogout, navItems }: HeaderProp
                         ))}
                     </nav>
                 )}
-
                 <div className="flex items-center gap-4">
                     {isAuthenticated ? (
                         <UserMenu user={user} onLogout={onLogout} />
