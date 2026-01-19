@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Package, LayoutDashboard, Building2, CreditCard, Receipt, ChevronLeft, ChevronRight } from "lucide-react";
+import { Package, LayoutDashboard, Building2, CreditCard, Receipt, ChevronLeft, ChevronRight, Plug } from "lucide-react";
 
 interface SidebarProps {
     className?: string;
@@ -31,6 +31,11 @@ export function Sidebar({ className }: SidebarProps) {
             title: "Billing",
             href: "/billing",
             icon: Receipt,
+        },
+        {
+            title: "Integrations",
+            href: "/integrations",
+            icon: Plug,
         },
     ];
 

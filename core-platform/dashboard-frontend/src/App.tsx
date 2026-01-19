@@ -12,6 +12,7 @@ import Plans from "./pages/Plans";
 import Organisation from "./pages/Organisation";
 import Billing from "./pages/Billing";
 import Profile from "./pages/Profile";
+import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -99,6 +100,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Organisation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/integrations"
+        element={
+          <ProtectedRoute>
+            <Integrations />
           </ProtectedRoute>
         }
       />
