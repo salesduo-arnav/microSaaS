@@ -9,6 +9,7 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Plans from "./pages/Plans";
+import Organisation from "./pages/Organisation";
 import Billing from "./pages/Billing";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -90,6 +91,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/organisation"
+        element={
+          <ProtectedRoute>
+            <Organisation />
           </ProtectedRoute>
         }
       />
