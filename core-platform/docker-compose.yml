@@ -25,20 +25,8 @@ services:
   core-backend:
     build: ./core-backend
     container_name: core-api
-    environment:
-      - REDIS_HOST=${REDIS_HOST:-shared-redis}
-      - REDIS_PORT=${REDIS_PORT:-6379}
-      - DB_HOST=${DB_HOST:-salesduo-db}
-      - DB_USER=${DB_USER:-root}
-      - DB_PASS=${DB_PASS:-rootpassword}
-      - DB_NAME=${DB_NAME:-salesduo_core}
-      - PORT=${CORE_API_PORT:-4000}
-      - COOKIE_DOMAIN=${COOKIE_DOMAIN:-.lvh.me}
-      - COOKIE_SECURE=${COOKIE_SECURE:-false}
-      - COOKIE_SAME_SITE=${COOKIE_SAME_SITE:-lax}
-      - SESSION_TTL=${SESSION_TTL:-86400}
-      - CORS_ORIGINS=${CORS_ORIGINS:-http://app.lvh.me,http://javascript.lvh.me,http://python.lvh.me}
-      # Add Stripe/Payment keys here later
+    env_file:
+      - ./.env
     networks:
       - salesduo-net
     depends_on:

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Package, LayoutDashboard, Building2, CreditCard, Receipt, ChevronLeft, ChevronRight, Plug } from "lucide-react";
+import { Package, LayoutDashboard, Building2, CreditCard, Receipt, ChevronLeft, ChevronRight, Plug, ShieldCheck, Users } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
     className?: string;
@@ -38,6 +39,8 @@ export function Sidebar({ className }: SidebarProps) {
             icon: Plug,
         },
     ];
+
+    const { user } = useAuth();
 
     return (
         <div
@@ -83,6 +86,23 @@ export function Sidebar({ className }: SidebarProps) {
                             </Link>
                         );
                     })}
+
+                    {user?.role === 'admin' && (
+                        <>
+                            <div className="my-2 border-t" />
+                            <Link
+                                to="/admin"
+                                title={isCollapsed ? "Admin Panel" : undefined}
+                                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname.startsWith('/admin')
+                                    ? "bg-muted text-primary"
+                                    : "text-muted-foreground"
+                                    } ${isCollapsed ? "justify-center px-2" : ""}`}
+                            >
+                                <ShieldCheck className="h-4 w-4 shrink-0" />
+                                {!isCollapsed && <span>Admin Panel</span>}
+                            </Link>
+                        </>
+                    )}
                 </nav>
             </div>
         </div>

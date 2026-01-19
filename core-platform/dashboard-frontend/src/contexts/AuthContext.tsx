@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // (Or you can have the login endpoint return the user object directly to save a call)
       const userRes = await fetch(`${API_URL}/user/me`, { credentials: "include" });
       const userData = await userRes.json();
-      
+
       setUser({
         id: userData.userId || userData.id,
         email: userData.email,
@@ -112,20 +112,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const data = await res.json();
-      
+
       // Assuming the signup response includes the user object
       if (data.user) {
-         setUser({
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name,
-            // Add other fields if your signup response returns them
-         });
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name,
+          // Add other fields if your signup response returns them
+        });
       } else {
         // Fallback: fetch user me
-         const userRes = await fetch(`${API_URL}/user/me`, { credentials: "include" });
-         const userData = await userRes.json();
-         setUser(userData);
+        const userRes = await fetch(`${API_URL}/user/me`, { credentials: "include" });
+        const userData = await userRes.json();
+        setUser(userData);
       }
 
     } catch (error) {
@@ -153,9 +153,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       // Call backend to invalidate session in Redis and clear HTTP-only cookie
-      await fetch(`${API_URL}/auth/logout`, { 
-        method: "POST", 
-        credentials: "include" 
+      await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include"
       });
     } catch (error) {
       console.error("Logout failed", error);

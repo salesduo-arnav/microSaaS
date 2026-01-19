@@ -14,6 +14,12 @@ import Billing from "./pages/Billing";
 import Profile from "./pages/Profile";
 import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AppsManager from "./pages/admin/AppsManager";
+import PlansManager from "./pages/admin/PlansManager";
+import UsersManager from "./pages/admin/UsersManager";
+import CreateApp from "./pages/admin/CreateApp";
+import CreatePlan from "./pages/admin/CreatePlan";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +36,24 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
+  return <>{children}</>;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Or a proper loading spinner
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return <>{children}</>;
 }
 
@@ -109,6 +133,56 @@ function AppRoutes() {
           <ProtectedRoute>
             <Integrations />
           </ProtectedRoute>
+        }
+      />
+
+      {/* Admin routes */}
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/apps"
+        element={
+          <AdminRoute>
+            <AppsManager />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/apps/new"
+        element={
+          <AdminRoute>
+            <CreateApp />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/plans"
+        element={
+          <AdminRoute>
+            <PlansManager />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/plans/new"
+        element={
+          <AdminRoute>
+            <CreatePlan />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <AdminRoute>
+            <UsersManager />
+          </AdminRoute>
         }
       />
 
