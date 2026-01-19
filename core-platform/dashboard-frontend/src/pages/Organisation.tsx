@@ -68,7 +68,7 @@ export default function Organisation() {
 
     return (
         <Layout>
-            <div className="space-y-8">
+            <div className="container py-8 space-y-8">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Organisation</h1>
                     <p className="text-muted-foreground mt-2">
