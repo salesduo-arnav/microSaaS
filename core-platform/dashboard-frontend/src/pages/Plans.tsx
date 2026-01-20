@@ -191,19 +191,6 @@ export default function Plans() {
           </p>
         </div>
 
-        {/* Current Plan Banner */}
-        <Card className="mb-8 border-primary/20 bg-primary/5">
-          <CardContent className="flex items-center justify-between py-4">
-            <div>
-              <p className="font-medium">You're currently on the Trial plan</p>
-              <p className="text-sm text-muted-foreground">
-                12 days remaining. Select a plan to continue your access.
-              </p>
-            </div>
-            <Badge variant="secondary">Trial</Badge>
-          </CardContent>
-        </Card>
-
         {/* Selection Summary - Shows when bundle + tier selected */}
         {selectedBundle && selectedTier && (
           <Card className="mb-8 border-primary bg-gradient-to-r from-primary/5 to-primary/10">

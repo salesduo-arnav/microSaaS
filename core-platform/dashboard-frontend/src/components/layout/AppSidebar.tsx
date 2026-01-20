@@ -69,12 +69,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r">
-      <SidebarHeader className="border-b px-6 py-4">
+      <SidebarHeader className="border-b px-2 py-2">
         <Link to="/dashboard" className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Package className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-semibold">SellerTools</span>
+          <img src="logo-dark.webp" className="h-14 w-14" alt="SalesDuo" />
+          <span className="text-lg font-semibold">App Workspace</span>
         </Link>
       </SidebarHeader>
 

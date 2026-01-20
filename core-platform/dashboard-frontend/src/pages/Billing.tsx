@@ -1,9 +1,21 @@
+import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Download, CreditCard } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const invoices = [
   {
@@ -27,38 +39,97 @@ const invoices = [
 ];
 
 export default function Billing() {
+  const [subscriptions, setSubscriptions] = useState([
+    {
+      id: "sub-1",
+      name: "Listing Content Generator",
+      plan: "Pro Plan",
+      price: "$29.00/mo",
+      status: "Active",
+      nextBilling: "Feb 1, 2024",
+    },
+    {
+      id: "sub-2",
+      name: "Image Editor & Optimizer",
+      plan: "Starter Plan",
+      price: "$19.00/mo",
+      status: "Active",
+      nextBilling: "Feb 15, 2024",
+    },
+  ]);
+
+  const handleUnsubscribe = (id: string) => {
+    setSubscriptions(subscriptions.filter((sub) => sub.id !== id));
+  };
+
   return (
     <Layout>
       <div className="container py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Billing & Invoices</h1>
           <p className="mt-2 text-muted-foreground">
-            Manage your subscription and view billing history
+            Manage your subscriptions and view billing history
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Current Plan */}
+          {/* Active Subscriptions */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Current Subscription</CardTitle>
+              <CardTitle>Active Subscriptions</CardTitle>
               <CardDescription>
-                Your active plan and next billing date
+                Manage your active plans and subscriptions
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-semibold">Trial Plan</span>
-                    <Badge variant="secondary">12 days left</Badge>
+            <CardContent className="space-y-4">
+              {subscriptions.map((sub) => (
+                <div
+                  key={sub.id}
+                  className="flex items-center justify-between rounded-lg border p-4"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-semibold">{sub.name}</span>
+                      <Badge variant="outline">{sub.plan}</Badge>
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {sub.price} • Next billing on {sub.nextBilling}
+                    </p>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Access to Listing Generator and Image Editor
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+                      {sub.status}
+                    </Badge>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50">
+                          Unsubscribe
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will cancel your {sub.plan} for {sub.name}. You will lose access to premium features at the end of the current billing period.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={() => handleUnsubscribe(sub.id)}
+                          >
+                            Unsubscribe
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
-                <Button>Upgrade Plan</Button>
-              </div>
+              ))}
+              {subscriptions.length === 0 && (
+                <p className="text-center text-muted-foreground py-4">No active subscriptions</p>
+              )}
             </CardContent>
           </Card>
 
@@ -76,61 +147,18 @@ export default function Billing() {
                   <CreditCard className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">No card on file</p>
+                  <p className="text-sm font-medium">Visa ending in 4242</p>
                   <p className="text-xs text-muted-foreground">
-                    Add a payment method
+                    Expires 12/28
                   </p>
                 </div>
               </div>
               <Button variant="outline" className="mt-4 w-full">
-                Add Payment Method
+                Update Payment Method
               </Button>
             </CardContent>
           </Card>
         </div>
-
-        {/* Usage */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Current Usage</CardTitle>
-            <CardDescription>
-              Your usage for this billing period
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-lg border p-4">
-                <p className="text-sm text-muted-foreground">
-                  Listings Generated
-                </p>
-                <p className="mt-1 text-2xl font-bold">35 / 100</p>
-                <div className="mt-2 h-2 w-full rounded-full bg-secondary">
-                  <div
-                    className="h-2 rounded-full bg-primary"
-                    style={{ width: "35%" }}
-                  />
-                </div>
-              </div>
-              <div className="rounded-lg border p-4">
-                <p className="text-sm text-muted-foreground">Images Processed</p>
-                <p className="mt-1 text-2xl font-bold">128 / 500</p>
-                <div className="mt-2 h-2 w-full rounded-full bg-secondary">
-                  <div
-                    className="h-2 rounded-full bg-primary"
-                    style={{ width: "25.6%" }}
-                  />
-                </div>
-              </div>
-              <div className="rounded-lg border p-4">
-                <p className="text-sm text-muted-foreground">API Calls</p>
-                <p className="mt-1 text-2xl font-bold">0 / 0</p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Upgrade for API access
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Billing History */}
         <Card className="mt-6">

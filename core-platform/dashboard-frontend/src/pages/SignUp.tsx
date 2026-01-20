@@ -76,7 +76,7 @@ export default function SignUp() {
   return (
     <AuthLayout
       title="Create an account"
-      subtitle="Start your 14-day free trial today"
+      subtitle="Create an account to get started"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Personal Information Section */}

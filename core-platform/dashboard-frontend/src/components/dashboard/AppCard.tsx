@@ -7,8 +7,7 @@ interface AppCardProps {
   title: string;
   description: string;
   icon: LucideIcon;
-  status: "active" | "trial" | "locked" | "coming-soon";
-  trialDaysLeft?: number;
+  status: "active" | "locked" | "coming-soon";
   onLaunch?: () => void;
 }
 
@@ -17,14 +16,12 @@ export function AppCard({
   description,
   icon: Icon,
   status,
-  trialDaysLeft,
   onLaunch,
 }: AppCardProps) {
-  const isAccessible = status === "active" || status === "trial";
+  const isAccessible = status === "active";
 
   const statusConfig = {
     active: { label: "Active", variant: "default" as const },
-    trial: { label: `${trialDaysLeft} days left`, variant: "secondary" as const },
     locked: { label: "Upgrade Required", variant: "outline" as const },
     "coming-soon": { label: "Coming Soon", variant: "outline" as const },
   };
@@ -53,8 +50,8 @@ export function AppCard({
           {status === "coming-soon"
             ? "Notify Me"
             : status === "locked"
-            ? "Upgrade to Access"
-            : "Launch App"}
+              ? "Upgrade to Access"
+              : "Launch App"}
         </Button>
       </CardContent>
     </Card>

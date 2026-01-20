@@ -15,8 +15,7 @@ export default function Dashboard() {
       description:
         "Create optimized product listings with AI-powered title, bullet points, and description generation.",
       icon: FileText,
-      status: "trial" as const,
-      trialDaysLeft: 12,
+      status: "active" as const,
       route: "/tools/listing-generator",
     },
     {
@@ -24,8 +23,7 @@ export default function Dashboard() {
       description:
         "Edit, optimize, and enhance your product images for maximum conversion.",
       icon: ImageIcon,
-      status: "trial" as const,
-      trialDaysLeft: 12,
+      status: "active" as const,
       route: "/tools/image-editor",
     },
     {
@@ -60,11 +58,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <QuickStats
-          trialDaysLeft={12}
-          currentPlan="Trial"
-          usagePercentage={35}
-        />
+        <QuickStats />
 
         <div>
           <h2 className="text-xl font-semibold">Your Apps</h2>
@@ -81,7 +75,6 @@ export default function Dashboard() {
               description={app.description}
               icon={app.icon}
               status={app.status}
-              trialDaysLeft={app.trialDaysLeft}
               onLaunch={
                 app.route ? () => handleLaunch(app.route!) : undefined
               }
