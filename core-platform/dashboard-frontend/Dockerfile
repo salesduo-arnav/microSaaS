@@ -1,22 +1,21 @@
-# Build stage
-FROM node:18-alpine AS builder
-
+# Base stage
+FROM node:18-alpine AS base
 WORKDIR /app
-
-COPY core-platform/dashboard-frontend/package.json \
-     core-platform/dashboard-frontend/package-lock.json ./
-
+COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY core-platform/dashboard-frontend .
+# Development stage
+FROM base AS development
+COPY . .
+CMD ["npm", "run", "dev", "--", "--host"]
 
+# Build stage
+FROM base AS builder
+COPY . .
 RUN npm run build
 
-# Runtime stage
-FROM nginx:alpine
-
+# Production stage
+FROM nginx:alpine AS production
 COPY --from=builder /app/dist /usr/share/nginx/html
-
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]

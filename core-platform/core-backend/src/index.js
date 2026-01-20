@@ -54,7 +54,7 @@ const redisClient = createClient({
 // SIGN UP
 app.post('/auth/signup', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, orgName } = req.body;
         if (!name || !email || !password) {
             return res.status(400).json({ error: 'Missing fields' });
         }
@@ -68,7 +68,7 @@ app.post('/auth/signup', async (req, res) => {
 
         const result = await sequelize.transaction(async (t) => {
             const org = await Organization.create({
-                name: `${name}'s Org`,
+                name: orgName || `${name}'s Org`, // Use provided name or fallback
                 plan: 'free'
             }, { transaction: t });
 

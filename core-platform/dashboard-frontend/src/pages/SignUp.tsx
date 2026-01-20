@@ -52,10 +52,15 @@ export default function SignUp() {
 
     try {
       const fullName = `${firstName} ${lastName}`.trim();
-      await signup(fullName, email, password);
+      // Pass orgName ("Acme Inc.") to the backend
+      await signup(fullName, email, password, orgName);
       navigate("/dashboard");
-    } catch (err) {
-      setError("Failed to create account");
+    } catch (err: any) {
+      if (err.message && err.message.includes("already exists")) {
+        setError("User with this email already exists");
+      } else {
+        setError("Failed to create account. Please try again.");
+      }
     }
   };
 

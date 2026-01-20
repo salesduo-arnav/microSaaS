@@ -13,7 +13,6 @@ services:
       - dashboard
 
   # 2. Shared Redis (Session Store)
-  # Critical: This holds the session data needed by middleware in other apps
   redis:
     image: redis:alpine
     container_name: ${REDIS_HOST:-shared-redis}
@@ -57,19 +56,21 @@ services:
   # 5. Dashboard Frontend (The Shell)
   dashboard:
     build:
-      context: ..
-      dockerfile: core-platform/dashboard-frontend/Dockerfile
+      context: ./dashboard-frontend
+      dockerfile: Dockerfile
+      target: development
     container_name: dashboard-ui
-    environment:
-      - VITE_API_URL=${VITE_API_URL:-http://api.lvh.me}
+    env_file:
+      - ./.env
     networks:
       - salesduo-net
     volumes:
-      - ./dashboard-frontend/src:/app/core-platform/dashboard-frontend/src # Hot reload support
+      - ./dashboard-frontend/src:/app/src # Hot reload support
+      - ./dashboard-frontend/vite.config.ts:/app/vite.config.ts
 
 networks:
   salesduo-net:
-    external: true
+    driver: bridge
 
 volumes:
   db_data:
