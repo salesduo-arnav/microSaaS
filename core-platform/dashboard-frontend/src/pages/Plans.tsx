@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
-import { Button } from "@salesduo/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@salesduo/ui/card";
-import { Badge } from "@salesduo/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@salesduo/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, Package, Star, Zap, Crown, Sparkles, FileText, ImageIcon, BarChart, TrendingUp } from "lucide-react";
-import { cn } from "@salesduo/ui/utils";
+import { cn } from "@/lib/utils";
 
 interface BundleTier {
   name: string;

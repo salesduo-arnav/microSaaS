@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthLayout } from "@/components/auth/AuthLayout";
-import { Button } from "@salesduo/ui/button";
-import { Input } from "@salesduo/ui/input";
-import { Label } from "@salesduo/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 
 export default function ForgotPassword() {

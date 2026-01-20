@@ -1,33 +1,40 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom"; // Added useSearchParams
-import { useAuth } from "@/contexts/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "@/components/auth/AuthLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { GoogleButton } from "@/components/auth/GoogleButton";
-import { Button } from "@salesduo/ui/button";
-import { Input } from "@salesduo/ui/input";
-import { Label } from "@salesduo/ui/label";
-import { Checkbox } from "@salesduo/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 export default function SignUp() {
-  const [name, setName] = useState("");
+  // Personal info
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Organisation info
+  const [orgName, setOrgName] = useState("");
+  const [orgSize, setOrgSize] = useState("");
+  const [orgRole, setOrgRole] = useState("");
+  const [amazonSellerId, setAmazonSellerId] = useState("");
+
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
   const { signup, loginWithGoogle, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams(); // Capture query params
-
-  // Helper to handle redirection logic
-  const handleRedirect = () => {
-    const redirectUrl = searchParams.get("redirect");
-    if (redirectUrl) {
-      window.location.href = redirectUrl;
-    } else {
-      navigate("/dashboard");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,8 +51,9 @@ export default function SignUp() {
     }
 
     try {
-      await signup(name, email, password);
-      handleRedirect(); // Use helper instead of hardcoded navigate
+      const fullName = `${firstName} ${lastName}`.trim();
+      await signup(fullName, email, password);
+      navigate("/dashboard");
     } catch (err) {
       setError("Failed to create account");
     }
@@ -54,7 +62,7 @@ export default function SignUp() {
   const handleGoogleSignup = async () => {
     try {
       await loginWithGoogle();
-      handleRedirect(); // Use helper instead of hardcoded navigate
+      navigate("/dashboard");
     } catch (err) {
       setError("Google sign-up failed");
     }
@@ -65,56 +73,154 @@ export default function SignUp() {
       title="Create an account"
       subtitle="Start your 14-day free trial today"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* ... (Inputs for Name, Email, Password remain unchanged) ... */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Personal Information Section */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+            Personal Information
+          </h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                type="text"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Doe"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="name">Full name</Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="John Doe"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number (Optional)</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="+1 (555) 000-0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="name@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+        <Separator />
+
+        {/* Organisation Information Section */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+            Organisation Information
+          </h3>
+          <div className="space-y-2">
+            <Label htmlFor="orgName">Organisation Name</Label>
+            <Input
+              id="orgName"
+              type="text"
+              placeholder="Acme Sellers Inc."
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="orgSize">Organisation Size</Label>
+              <Select value={orgSize} onValueChange={setOrgSize}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select size" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Just me</SelectItem>
+                  <SelectItem value="2-5">2-5 employees</SelectItem>
+                  <SelectItem value="6-20">6-20 employees</SelectItem>
+                  <SelectItem value="21-50">21-50 employees</SelectItem>
+                  <SelectItem value="50+">50+ employees</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="orgRole">Your Role</Label>
+              <Select value={orgRole} onValueChange={setOrgRole}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="owner">Business Owner</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="marketing">Marketing</SelectItem>
+                  <SelectItem value="operations">Operations</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="amazonSellerId">Amazon Seller ID (Optional)</Label>
+            <Input
+              id="amazonSellerId"
+              type="text"
+              placeholder="e.g., A1B2C3D4E5F6G7"
+              value={amazonSellerId}
+              onChange={(e) => setAmazonSellerId(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              You can add this later in your organisation settings
+            </p>
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm password</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            placeholder="••••••••"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
+        <Separator />
 
         <div className="flex items-center space-x-2">
           <Checkbox
@@ -162,11 +268,7 @@ export default function SignUp() {
 
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          {/* UPDATED LINK: Preserves the ?redirect=... parameter */}
-          <Link
-            to={`/login?${searchParams.toString()}`}
-            className="text-primary hover:underline"
-          >
+          <Link to="/login" className="text-primary hover:underline">
             Sign in
           </Link>
         </p>

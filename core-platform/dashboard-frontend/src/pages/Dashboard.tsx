@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { AppCard } from "@/components/dashboard/AppCard";
 import { QuickStats } from "@/components/dashboard/QuickStats";
@@ -6,6 +7,7 @@ import { FileText, ImageIcon, BarChart, Package } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const apps = [
     {
@@ -15,7 +17,7 @@ export default function Dashboard() {
       icon: FileText,
       status: "trial" as const,
       trialDaysLeft: 12,
-      subdomain: "campaign",
+      route: "/tools/listing-generator",
     },
     {
       title: "Image Editor & Optimizer",
@@ -24,7 +26,7 @@ export default function Dashboard() {
       icon: ImageIcon,
       status: "trial" as const,
       trialDaysLeft: 12,
-      subdomain: "images",
+      route: "/tools/image-editor",
     },
     {
       title: "Analytics Dashboard",
@@ -42,17 +44,15 @@ export default function Dashboard() {
     },
   ];
 
-  const handleLaunch = (subdomain: string) => {
-    // TODO: Replace with actual subdomain URLs
-    console.log(`Launching ${subdomain} app...`);
-    window.location.href = `http://${subdomain}.lvh.me`;
+  const handleLaunch = (route: string) => {
+    navigate(route);
   };
 
   return (
     <Layout>
-      <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
             Welcome back, {user?.name || "Seller"}
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -60,15 +60,13 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="mb-8">
-          <QuickStats
-            trialDaysLeft={12}
-            currentPlan="Trial"
-            usagePercentage={35}
-          />
-        </div>
+        <QuickStats
+          trialDaysLeft={12}
+          currentPlan="Trial"
+          usagePercentage={35}
+        />
 
-        <div className="mb-6">
+        <div>
           <h2 className="text-xl font-semibold">Your Apps</h2>
           <p className="text-sm text-muted-foreground">
             Launch any of your available tools below
@@ -85,7 +83,7 @@ export default function Dashboard() {
               status={app.status}
               trialDaysLeft={app.trialDaysLeft}
               onLaunch={
-                app.subdomain ? () => handleLaunch(app.subdomain!) : undefined
+                app.route ? () => handleLaunch(app.route!) : undefined
               }
             />
           ))}

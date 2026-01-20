@@ -1,36 +1,27 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom"; // Added useSearchParams
-import { useAuth } from "@/contexts/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "@/components/auth/AuthLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { GoogleButton } from "@/components/auth/GoogleButton";
-import { Button } from "@salesduo/ui/button";
-import { Input } from "@salesduo/ui/input";
-import { Label } from "@salesduo/ui/label";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const { login, loginWithGoogle, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams(); // Capture query params
-
-  // Helper to handle redirection logic
-  const handleRedirect = () => {
-    const redirectUrl = searchParams.get("redirect");
-    if (redirectUrl) {
-      window.location.href = redirectUrl;
-    } else {
-      navigate("/dashboard");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     try {
       await login(email, password);
-      handleRedirect(); // Use helper
+      navigate("/dashboard");
     } catch (err) {
       setError("Invalid email or password");
     }
@@ -39,7 +30,7 @@ export default function Login() {
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
-      handleRedirect(); // Use helper
+      navigate("/dashboard");
     } catch (err) {
       setError("Google sign-in failed");
     }
@@ -50,9 +41,9 @@ export default function Login() {
       title="Welcome back"
       subtitle="Enter your credentials to access your account"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">Email Address</Label>
           <Input
             id="email"
             type="email"
@@ -83,6 +74,20 @@ export default function Login() {
           />
         </div>
 
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="rememberMe"
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+          />
+          <label
+            htmlFor="rememberMe"
+            className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Remember me for 30 days
+          </label>
+        </div>
+
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         <Button type="submit" className="w-full" disabled={isLoading}>
@@ -104,11 +109,7 @@ export default function Login() {
 
         <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
-          {/* UPDATED LINK: Preserves the ?redirect=... parameter */}
-          <Link
-            to={`/signup?${searchParams.toString()}`}
-            className="text-primary hover:underline"
-          >
+          <Link to="/signup" className="text-primary hover:underline">
             Sign up
           </Link>
         </p>

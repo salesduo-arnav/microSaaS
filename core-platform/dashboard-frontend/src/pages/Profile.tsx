@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/layout/Layout";
-import { Button } from "@salesduo/ui/button";
-import { Input } from "@salesduo/ui/input";
-import { Label } from "@salesduo/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@salesduo/ui/card";
-import { Avatar, AvatarFallback } from "@salesduo/ui/avatar";
-import { Badge } from "@salesduo/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -18,11 +18,11 @@ export default function Profile() {
 
   const initials = user?.name
     ? user.name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
     : "U";
 
   const handleProfileUpdate = (e: React.FormEvent) => {

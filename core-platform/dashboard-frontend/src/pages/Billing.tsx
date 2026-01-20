@@ -1,8 +1,8 @@
 import { Layout } from "@/components/layout/Layout";
-import { Button } from "@salesduo/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@salesduo/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@salesduo/ui/table";
-import { Badge } from "@salesduo/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Download, CreditCard } from "lucide-react";
 
 const invoices = [

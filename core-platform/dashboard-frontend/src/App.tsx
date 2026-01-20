@@ -1,6 +1,6 @@
-import { Toaster } from "@salesduo/ui/toaster";
-import { Toaster as Sonner } from "@salesduo/ui/sonner";
-import { TooltipProvider } from "@salesduo/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -9,17 +9,17 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Plans from "./pages/Plans";
-import Organisation from "./pages/Organisation";
 import Billing from "./pages/Billing";
 import Profile from "./pages/Profile";
+import Organisation from "./pages/Organisation";
 import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
+import ListingGenerator from "./pages/tools/ListingGenerator";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AppsManager from "./pages/admin/AppsManager";
-import PlansManager from "./pages/admin/PlansManager";
-import UsersManager from "./pages/admin/UsersManager";
-import CreateApp from "./pages/admin/CreateApp";
-import CreatePlan from "./pages/admin/CreatePlan";
+import AdminApps from "./pages/admin/AdminApps";
+import AdminPlans from "./pages/admin/AdminPlans";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminOrganizations from "./pages/admin/AdminOrganizations";
 
 const queryClient = new QueryClient();
 
@@ -31,29 +31,22 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
-  if (isAuthenticated) {
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isAdmin } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  if (!isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
   return <>{children}</>;
 }
 
-function AdminRoute({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Loading...</div>; // Or a proper loading spinner
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (user?.role !== 'admin') {
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
-
   return <>{children}</>;
 }
 
@@ -112,6 +105,22 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/integrations"
+        element={
+          <ProtectedRoute>
+            <Integrations />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tools/listing-generator"
+        element={
+          <ProtectedRoute>
+            <ListingGenerator />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/profile"
         element={
           <ProtectedRoute>
@@ -124,14 +133,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Organisation />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/integrations"
-        element={
-          <ProtectedRoute>
-            <Integrations />
           </ProtectedRoute>
         }
       />
@@ -149,15 +150,7 @@ function AppRoutes() {
         path="/admin/apps"
         element={
           <AdminRoute>
-            <AppsManager />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin/apps/new"
-        element={
-          <AdminRoute>
-            <CreateApp />
+            <AdminApps />
           </AdminRoute>
         }
       />
@@ -165,15 +158,7 @@ function AppRoutes() {
         path="/admin/plans"
         element={
           <AdminRoute>
-            <PlansManager />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin/plans/new"
-        element={
-          <AdminRoute>
-            <CreatePlan />
+            <AdminPlans />
           </AdminRoute>
         }
       />
@@ -181,7 +166,15 @@ function AppRoutes() {
         path="/admin/users"
         element={
           <AdminRoute>
-            <UsersManager />
+            <AdminUsers />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/organizations"
+        element={
+          <AdminRoute>
+            <AdminOrganizations />
           </AdminRoute>
         }
       />

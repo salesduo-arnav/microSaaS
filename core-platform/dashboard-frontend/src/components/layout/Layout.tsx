@@ -1,26 +1,25 @@
 import { ReactNode } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { Header } from "./Header";
-import { Sidebar } from "./Sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
-  const { user, logout, isAuthenticated } = useAuth();
-
   return (
-    <div className="flex min-h-screen bg-background">
-      {isAuthenticated && <Sidebar className="hidden md:flex" />}
-      <div className="flex flex-1 flex-col">
-        <Header
-          isAuthenticated={isAuthenticated}
-          user={user}
-          onLogout={logout}
-        />
-        <main className="flex-1 p-6">{children}</main>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-auto">
+          <div className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
+            <SidebarTrigger />
+          </div>
+          <div className="p-6">
+            {children}
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

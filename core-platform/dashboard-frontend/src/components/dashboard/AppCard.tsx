@@ -1,7 +1,7 @@
 import { LucideIcon } from "lucide-react";
-import { Button } from "@salesduo/ui/button";
-import { Badge } from "@salesduo/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@salesduo/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface AppCardProps {
   title: string;
@@ -53,8 +53,8 @@ export function AppCard({
           {status === "coming-soon"
             ? "Notify Me"
             : status === "locked"
-              ? "Upgrade to Access"
-              : "Launch App"}
+            ? "Upgrade to Access"
+            : "Launch App"}
         </Button>
       </CardContent>
     </Card>

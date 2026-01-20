@@ -18,7 +18,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             <Package className="h-6 w-6 text-primary" />
           </div>
           <span className="text-2xl font-semibold text-primary-foreground">
-            SalesDuo
+            SellerTools
           </span>
         </Link>
         <div>
@@ -31,19 +31,19 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
           </p>
         </div>
         <p className="text-sm text-primary-foreground/60">
-          © 2024 SalesDuo. All rights reserved.
+          © 2024 SellerTools. All rights reserved.
         </p>
       </div>
 
       {/* Right side - Form */}
-      <div className="flex w-full lg:w-1/2 flex-col justify-center px-8 py-16 lg:px-20">
-        <div className="mx-auto w-full max-w-sm">
+      <div className="flex w-full lg:w-1/2 flex-col justify-center px-8 py-12 lg:px-16">
+        <div className="mx-auto w-full max-w-md">
           <div className="lg:hidden mb-8">
             <Link to="/" className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
                 <Package className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-semibold">SalesDuo</span>
+              <span className="text-xl font-semibold">SellerTools</span>
             </Link>
           </div>
 

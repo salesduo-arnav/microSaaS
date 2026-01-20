@@ -1,27 +1,22 @@
-FROM node:18-alpine
+# Build stage
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy shared libraries
-COPY shared-libs ./shared-libs
+COPY core-platform/dashboard-frontend/package.json \
+     core-platform/dashboard-frontend/package-lock.json ./
 
-# Install shared-lib dependencies
-WORKDIR /app/shared-libs/salesduo-ui
-RUN npm install
+RUN npm ci
 
-# Setup dashboard
-WORKDIR /app/core-platform/dashboard-frontend
-COPY core-platform/dashboard-frontend/package.json .
-# npm install will use the `file:` path which points to ../../shared-libs/salesduo-ui
-# We are currently in /app/core-platform/dashboard-frontend
-# ../../shared-libs/salesduo-ui translates to /app / shared-libs / salesduo-ui
-# Which exists because we copied shared-libs to /app/shared-libs
-
-RUN npm install
-
-# Copy the rest of the dashboard code
 COPY core-platform/dashboard-frontend .
 
-# Expose Vite port
-EXPOSE 3000
-CMD ["npm", "run", "dev", "--", "--host"]
+RUN npm run build
+
+# Runtime stage
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

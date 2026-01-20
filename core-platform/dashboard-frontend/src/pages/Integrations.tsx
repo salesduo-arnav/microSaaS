@@ -1,246 +1,383 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
-import { Plug, Plus, Trash2, ExternalLink, Key } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"; // Assuming standard shadcn/custom components exist or need to be created, but I'll use standard HTML/Tailwind for now if they don't exist to avoid breakage, OR I'll check if they exist. Redacting to standard HTML for safety in this step or waiting to check.
-// Actually, let's use standard Tailwind for the layout and see if we can import UI components.
-// The user has @salesduo/ui but I don't know all exports. I'll stick to basic HTML/Tailwind for the structure to be safe,
-// or better, I should implement it using the design system if possible.
-// Given previous context, I'll assume standard components might need to be imported or I'll build them inline for now to avoid 'module not found' if I guess wrong.
-// Wait, I saw "import { Toaster } from "@salesduo/ui/toaster";" in App.tsx. Use of @salesduo/ui seems preferred.
-// However, creating a whole form might be complex without knowing available components.
-// I will create a self-contained page first using Tailwind classes.
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Plug,
+  Plus,
+  Check,
+  AlertCircle,
+  RefreshCw,
+  Trash2,
+  ExternalLink,
+  ShoppingCart,
+  Key,
+} from "lucide-react";
 
 interface Integration {
-    id: string;
-    name: string;
-    sellerId: string;
-    region: string;
-    connectedAt: string;
-    status: "active" | "inactive";
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  status: "connected" | "disconnected" | "error";
+  lastSync?: string;
+  marketplace?: string;
 }
 
+const availableIntegrations: Integration[] = [
+  {
+    id: "sp-api",
+    name: "Amazon SP-API",
+    description: "Connect your Amazon Seller Central account via Selling Partner API",
+    icon: <ShoppingCart className="h-6 w-6" />,
+    status: "disconnected",
+    marketplace: "Amazon",
+  },
+  {
+    id: "mws",
+    name: "Amazon MWS (Legacy)",
+    description: "Legacy Marketplace Web Service integration",
+    icon: <ShoppingCart className="h-6 w-6" />,
+    status: "disconnected",
+    marketplace: "Amazon",
+  },
+  {
+    id: "advertising-api",
+    name: "Amazon Advertising API",
+    description: "Connect your Amazon Advertising account for PPC management",
+    icon: <ShoppingCart className="h-6 w-6" />,
+    status: "disconnected",
+    marketplace: "Amazon",
+  },
+];
+
 export default function Integrations() {
-    const [integrations, setIntegrations] = useState<Integration[]>([]);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        name: "",
+  const [integrations, setIntegrations] = useState<Integration[]>([
+    {
+      id: "sp-api-1",
+      name: "Amazon SP-API",
+      description: "US Marketplace",
+      icon: <ShoppingCart className="h-6 w-6" />,
+      status: "connected",
+      lastSync: "2 hours ago",
+      marketplace: "amazon.com",
+    },
+  ]);
+
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
+  const [credentials, setCredentials] = useState({
+    sellerId: "",
+    clientId: "",
+    clientSecret: "",
+    refreshToken: "",
+  });
+
+  const handleConnect = () => {
+    if (selectedIntegration) {
+      setIntegrations([
+        ...integrations,
+        {
+          ...selectedIntegration,
+          id: `${selectedIntegration.id}-${Date.now()}`,
+          status: "connected",
+          lastSync: "Just now",
+        },
+      ]);
+      setIsAddDialogOpen(false);
+      setSelectedIntegration(null);
+      setCredentials({
         sellerId: "",
-        authToken: "",
-        region: "North America",
-    });
+        clientId: "",
+        clientSecret: "",
+        refreshToken: "",
+      });
+    }
+  };
 
-    const handleSave = (e: React.FormEvent) => {
-        e.preventDefault();
-        const newIntegration: Integration = {
-            id: Math.random().toString(36).substr(2, 9),
-            name: formData.name,
-            sellerId: formData.sellerId,
-            region: formData.region,
-            connectedAt: new Date().toLocaleDateString(),
-            status: "active",
-        };
-        setIntegrations([...integrations, newIntegration]);
-        setIsDialogOpen(false);
-        setFormData({ name: "", sellerId: "", authToken: "", region: "North America" });
-    };
+  const handleDisconnect = (id: string) => {
+    setIntegrations(integrations.filter((i) => i.id !== id));
+  };
 
-    const handleDelete = (id: string) => {
-        setIntegrations(integrations.filter((i) => i.id !== id));
-    };
-
-    return (
-        <Layout>
-            <div className="container py-8 max-w-5xl">
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Integrations</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            Manage your connected Amazon Seller Central accounts and APIs.
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => setIsDialogOpen(true)}
-                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Integration
-                    </button>
-                </div>
-
-                {/* Integration List */}
-                <div className="grid gap-6">
-                    {integrations.length === 0 ? (
-                        <div className="rounded-lg border border-dashed p-12 text-center">
-                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                                <Plug className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                            <h3 className="mt-4 text-lg font-semibold">No integrations connected</h3>
-                            <p className="mb-4 mt-2 text-sm text-muted-foreground">
-                                Connect your Amazon Seller Central account to start syncing data.
-                            </p>
-                            <button
-                                onClick={() => setIsDialogOpen(true)}
-                                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
-                            >
-                                Connect Account
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {integrations.map((integration) => (
-                                <div
-                                    key={integration.id}
-                                    className="rounded-lg border bg-card text-card-foreground shadow-sm"
-                                >
-                                    <div className="p-6">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/20">
-                                                    <span className="text-lg font-bold text-[#FF9900]">a</span>
-                                                </div>
-                                                <div>
-                                                    <h3 className="font-semibold leading-none tracking-tight">
-                                                        {integration.name}
-                                                    </h3>
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        {integration.region}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                                    Active
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="mt-4 grid gap-2">
-                                            <div className="flex items-center justify-between text-sm">
-                                                <span className="text-muted-foreground">Seller ID</span>
-                                                <span className="font-mono">{integration.sellerId}</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-sm">
-                                                <span className="text-muted-foreground">Connected</span>
-                                                <span>{integration.connectedAt}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center p-6 pt-0">
-                                        <button
-                                            onClick={() => handleDelete(integration.id)}
-                                            className="inline-flex w-full items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Disconnect
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Add Integration Dialog */}
-            {isDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-                    <div className="w-full max-w-md rounded-lg border bg-background p-6 shadow-lg animate-in fade-in zoom-in-95 duration-200">
-                        <div className="flex flex-col space-y-1.5 text-center sm:text-left mb-6">
-                            <h2 className="text-lg font-semibold leading-none tracking-tight">Connect Amazon SP-API</h2>
-                            <p className="text-sm text-muted-foreground">
-                                Enter your Amazon Seller Central credentials to connect your account.
-                            </p>
-                        </div>
-
-                        <form onSubmit={handleSave} className="space-y-4">
-                            <div className="space-y-2">
-                                <label htmlFor="name" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Account Name
-                                </label>
-                                <input
-                                    id="name"
-                                    placeholder="e.g. US Store"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    required
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <label htmlFor="sellerId" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Seller ID
-                                </label>
-                                <input
-                                    id="sellerId"
-                                    placeholder="Amazon Seller ID"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={formData.sellerId}
-                                    onChange={(e) => setFormData({ ...formData, sellerId: e.target.value })}
-                                    required
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <label htmlFor="authToken" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    MWS Auth Token
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        id="authToken"
-                                        type="password"
-                                        placeholder="amzn.mws..."
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-10"
-                                        value={formData.authToken}
-                                        onChange={(e) => setFormData({ ...formData, authToken: e.target.value })}
-                                        required
-                                    />
-                                    <Key className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label htmlFor="region" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Region
-                                </label>
-                                <select
-                                    id="region"
-                                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={formData.region}
-                                    onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                                >
-                                    <option value="North America">North America (NA)</option>
-                                    <option value="Europe">Europe (EU)</option>
-                                    <option value="Far East">Far East (FE)</option>
-                                </select>
-                            </div>
-
-                            <div className="flex justify-end gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsDialogOpen(false)}
-                                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                                >
-                                    Connect
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </Layout>
+  const handleSync = (id: string) => {
+    setIntegrations(
+      integrations.map((i) =>
+        i.id === id ? { ...i, lastSync: "Just now" } : i
+      )
     );
+  };
+
+  const getStatusBadge = (status: Integration["status"]) => {
+    switch (status) {
+      case "connected":
+        return (
+          <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+            <Check className="h-3 w-3 mr-1" />
+            Connected
+          </Badge>
+        );
+      case "error":
+        return (
+          <Badge variant="destructive">
+            <AlertCircle className="h-3 w-3 mr-1" />
+            Error
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="secondary">
+            Disconnected
+          </Badge>
+        );
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Integrations</h1>
+            <p className="text-muted-foreground mt-2">
+              Connect your Amazon seller accounts and third-party services
+            </p>
+          </div>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Integration
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add New Integration</DialogTitle>
+                <DialogDescription>
+                  Select an integration type and provide your credentials
+                </DialogDescription>
+              </DialogHeader>
+
+              {!selectedIntegration ? (
+                <div className="grid gap-4 py-4">
+                  {availableIntegrations.map((integration) => (
+                    <button
+                      key={integration.id}
+                      onClick={() => setSelectedIntegration(integration)}
+                      className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors text-left"
+                    >
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        {integration.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">{integration.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {integration.description}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4 py-4">
+                  <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      {selectedIntegration.icon}
+                    </div>
+                    <div>
+                      <p className="font-medium">{selectedIntegration.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedIntegration.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="sellerId">Seller ID</Label>
+                      <Input
+                        id="sellerId"
+                        value={credentials.sellerId}
+                        onChange={(e) =>
+                          setCredentials({ ...credentials, sellerId: e.target.value })
+                        }
+                        placeholder="Enter your Amazon Seller ID"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="clientId">Client ID</Label>
+                      <Input
+                        id="clientId"
+                        value={credentials.clientId}
+                        onChange={(e) =>
+                          setCredentials({ ...credentials, clientId: e.target.value })
+                        }
+                        placeholder="LWA Client ID"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="clientSecret">Client Secret</Label>
+                      <Input
+                        id="clientSecret"
+                        type="password"
+                        value={credentials.clientSecret}
+                        onChange={(e) =>
+                          setCredentials({ ...credentials, clientSecret: e.target.value })
+                        }
+                        placeholder="LWA Client Secret"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="refreshToken">Refresh Token</Label>
+                      <Input
+                        id="refreshToken"
+                        type="password"
+                        value={credentials.refreshToken}
+                        onChange={(e) =>
+                          setCredentials({ ...credentials, refreshToken: e.target.value })
+                        }
+                        placeholder="OAuth Refresh Token"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <DialogFooter>
+                {selectedIntegration && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedIntegration(null)}
+                  >
+                    Back
+                  </Button>
+                )}
+                <Button
+                  onClick={handleConnect}
+                  disabled={!selectedIntegration}
+                >
+                  <Plug className="h-4 w-4 mr-2" />
+                  Connect
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Connected Integrations */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Connected Integrations</h2>
+          {integrations.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Plug className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-lg font-medium">No integrations connected</p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Add your first integration to get started
+                </p>
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Integration
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {integrations.map((integration) => (
+                <Card key={integration.id}>
+                  <CardContent className="flex items-center justify-between p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        {integration.icon}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{integration.name}</p>
+                          {getStatusBadge(integration.status)}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {integration.marketplace}
+                          {integration.lastSync && ` • Last synced ${integration.lastSync}`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSync(integration.id)}
+                      >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Sync
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDisconnect(integration.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Available Integrations */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Available Integrations</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {availableIntegrations.map((integration) => (
+              <Card key={integration.id} className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      {integration.icon}
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">{integration.name}</CardTitle>
+                      <Badge variant="outline" className="mt-1 text-xs">
+                        {integration.marketplace}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {integration.description}
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      setSelectedIntegration(integration);
+                      setIsAddDialogOpen(true);
+                    }}
+                  >
+                    <Key className="h-4 w-4 mr-2" />
+                    Connect
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
 }
